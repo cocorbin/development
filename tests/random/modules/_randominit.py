@@ -61,19 +61,24 @@ def _randomDict(dict_  = {}):
          truth = dict_['truth']
     else:
          truth = np.random.choice(['true', 'false'])
-    if('diffs' in dict_.keys()):
-        diffs = dict_['diffs']
+    if('differences' in dict_.keys()):
+        differences = dict_['differencess']
     else:
-        diffs = np.random.choice(['one-sided', 'two-sided'])
+        differences = np.random.choice(['one-sided', 'two-sided'])
     if('starts' in dict_.keys()):
         starts = dict_['starts']
     else:
         starts = np.random.choice(['manual', 'auto'])
 
-    if('hess' in dict_.keys()):
-        hess = dict_['hess']
+    if('hessian' in dict_.keys()):
+        hessian = dict_['hessian']
     else:
         hess = np.random.choice(['bfgs', 'numdiff'])
+        
+    if('AGENTS in dict_.keys()):
+    	AGENTS = dict_['AGENTS']
+    else:
+    	AGENTS = np.random.choice('None', np.random.random_integers(1, 10000))	    
 
 
 
@@ -93,11 +98,13 @@ def _randomDict(dict_  = {}):
 
     dict_ = {}
 
+# !! NEED TO CONSTRUCT TEST DATA SET !!
+
     ''' DATA
     '''
     dict_['DATA'] = {}
-    dict_['DATA']['source']  = 'dataset.dat'
-    dict_['DATA']['agents']  = np.random.random_integers(10, 10000)
+    dict_['DATA']['source']  = 'test.dataset.dat'
+    dict_['DATA']['agents']  = AGENTS
     dict_['DATA']['outcome']  = 0
     dict_['DATA']['treatment']  = np.random.random_integers(0,2)
 
@@ -143,7 +150,7 @@ def _randomDict(dict_  = {}):
     dict_['DIST']['rho0'] = [constraints.pop(), np.random.uniform(-1.0, 1.0)]
     dict_['DIST']['rho1'] = [constraints.pop(), np.random.uniform(-1.0, 1.0)]
 
-
+#  !! SHOULD 'ALGORITHM' BE REPLACED BY EXTERNAL optimizers.ini?  !!
 
     ''' ESTIMATION
     '''
@@ -160,16 +167,16 @@ def _randomDict(dict_  = {}):
     dict_['ESTIMATION']['asymptotics'] = truth
     dict_['ESTIMATION']['hessian'] = hess
     dict_['ESTIMATION']['alpha'] = np.random.choice(0.01, 0.05, 0.1)
-    dict_['ESTIMATION']['simulations'] = np.random.random_integers(1000,10000)
-    dict_['ESTIMATION']['draws'] = np.random.random_integers(1000,10000)
+    dict_['ESTIMATION']['simulations'] = np.random.random_integers(100,10000)
+    dict_['ESTIMATION']['draws'] = np.random.random_integers(100,10000)
 
 
     ''' SIMULATION
     '''
     dict_['SIMULATION'] = {}
-    dict_['SIMULATION']['agents']  = numSim
+    dict_['SIMULATION']['agents']  = AGENTS
     dict_['SIMULATION']['seed']    = np.random.random_integers(1, 1000)
-    dict_['SIMULATION']['target'] = 'simulation.dat'
+    dict_['SIMULATION']['target'] = 'test.simulation.dat'
 
     # Finishing.
     return dict_

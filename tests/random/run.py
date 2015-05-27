@@ -1,7 +1,5 @@
-__author__ = 'cocorbin'
-
 #!/usr/bin/env python
-''' Script to start development test battery for the structToolbox.
+''' Script to start development test battery for the grmToolbox.
 '''
 
 # standard library

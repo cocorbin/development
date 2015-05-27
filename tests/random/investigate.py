@@ -1,5 +1,3 @@
-__author__ = 'cocorbin'
-
 #!/usr/bin/env python
 ''' Script to quickly investigate failed estimation runs.
 '''
