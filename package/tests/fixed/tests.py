@@ -21,6 +21,10 @@ sys.path.insert(0, os.environ['GRM_TOOLBOX'])
 # project library
 import grmToolbox
 
+# virtual environment
+if not hasattr(sys, 'real_prefix'):
+    raise AssertionError, 'Please use a virtual environment for testing'
+
 ''' Test class '''
 
 class TestEstimationRuns(object):
