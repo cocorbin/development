@@ -4,13 +4,14 @@
     output. This allows to check if the change was intended to occur. 
     The success of the tests depends heavily on the software versions and
     system architecture. They are not expected to success on other machines 
-    other than @heracles.
+    other than @zeus.
 
 """
 # standard library
 import cPickle as pkl
-import os
+import socket
 import sys
+import os
 
 from nose.core import *
 from nose.tools import *
@@ -24,6 +25,9 @@ import grmToolbox
 # virtual environment
 if not hasattr(sys, 'real_prefix'):
     raise AssertionError, 'Please use a virtual environment for testing'
+
+# testing server
+assert (socket.gethostname() == 'zeus')
 
 ''' Test class '''
 
@@ -45,7 +49,7 @@ class TestEstimationRuns(object):
         max_rslt = rslt_dict['maxRslt']
         
         # Assertions
-        assert_almost_equal(max_rslt['fun'], 1.643038068973831)
+        assert_almost_equal(max_rslt['fun'], 1.6430379682525786)
 
         # Cleanup
         grmToolbox.cleanup(resume=False)
@@ -63,7 +67,7 @@ class TestEstimationRuns(object):
         rslt_dict = pkl.load(open('rslt.grm.pkl', 'r'))
 
         # Assertions.
-        assert_almost_equal(rslt_dict['maxRslt']['fun'], 1.6569859824560313)
+        assert_almost_equal(rslt_dict['maxRslt']['fun'], 1.6569860751490129)
 
         # Cleanup.
         grmToolbox.cleanup(resume=False)
@@ -81,21 +85,21 @@ class TestEstimationRuns(object):
         rslt_dict = pkl.load(open('rslt.grm.pkl', 'r'))
 
         # Assertions
-        assert_almost_equal(rslt_dict['maxRslt']['fun'], 1.6281817748415393)
+        assert_almost_equal(rslt_dict['maxRslt']['fun'], 1.628181660180656)
 
         assert_almost_equal(rslt_dict['bmteExPost']['estimate'][50],
-        -0.10666298513882175)
+        -0.10666320040952278)
         assert_almost_equal(rslt_dict['bmteExPost']['confi']['upper'][50],
-        -0.078545042872650739)
+        -0.080996046567391178)
         assert_almost_equal(rslt_dict['bmteExPost']['confi']['lower'][50],
-        -0.13429949460194246)
+        -0.1358041329192142)
    
         assert_almost_equal(rslt_dict['smteExAnte']['estimate'][50],
-        -0.13443440314930999)
+        -0.13443516496559108)
         assert_almost_equal(rslt_dict['smteExAnte']['confi']['upper'][50],
-        -0.10163853993013783)
+        -0.10158353097568325)
         assert_almost_equal(rslt_dict['smteExAnte']['confi']['lower'][50],
-        -0.16935220247013208)
+        -0.16744058087070901)
    
         #Assert relationship between parameters
         for i in range(99):
@@ -123,35 +127,35 @@ class TestEstimationRuns(object):
 
         # Assertions.
         assert_almost_equal(rslt_dict['bteExPost']['average']['estimate'],
-        -0.14337500688760152)
+        -0.14337522136788611)
         assert_almost_equal(rslt_dict['bteExPost']['treated']['estimate'],
-        0.06553651561690533)
+        0.065536369981413087)
         assert_almost_equal(rslt_dict['bteExPost']['untreated']['estimate'],
-        -0.30751977456971408)
+        -0.30752004314233555)
 
         assert_almost_equal(rslt_dict['bteExAnte']['average']['estimate'],
-        -0.14337500688760152)
+        -0.14337522136788611)
         assert_almost_equal(rslt_dict['bteExAnte']['treated']['estimate'],
-        0.06553651561690533)
+        0.065536369981413087)
         assert_almost_equal(rslt_dict['bteExAnte']['untreated']['estimate'],
-        -0.30751977456971408)
+        -0.30752004314233555)
 
         assert_almost_equal(rslt_dict['cte']['average']['estimate'],
-        0.0786721631745564)
+        0.078672710078639602)
         assert_almost_equal(rslt_dict['cte']['treated']['estimate'],
-        -0.7216392651098148)
+        -0.72163877018841327)
         assert_almost_equal(rslt_dict['cte']['untreated']['estimate'],
-        0.7074882853979908)
+        0.70748887314560982)
 
         assert_almost_equal(rslt_dict['ste']['average']['estimate'],
-        -0.2220471700621577)
+        -0.22204793144652576)
         assert_almost_equal(rslt_dict['ste']['treated']['estimate'],
-        0.7871757807267197)
+        0.78717514016982626)
         assert_almost_equal(rslt_dict['ste']['untreated']['estimate'],
-        -1.0150080599677049)
+        -1.0150089162879454)
 
         # Cleanup.
-        grmToolbox.cleanup(resume = False)
+        grmToolbox.cleanup(resume=False)
 
 if __name__ == '__main__': 
     
