@@ -17,7 +17,7 @@ from nose.core import *
 from nose.tools import *
 
 # Pythonpath
-sys.path.insert(0, os.environ['GRM_TOOLBOX'])
+sys.path.insert(0, os.environ['GRMPY'])
 
 # project library
 import grmpy.public as grmpy

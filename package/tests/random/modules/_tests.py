@@ -14,7 +14,7 @@ import _auxiliary
 import _randominit
 
 # structToolbox
-sys.path.insert(0, os.environ['GRM_TOOLBOX'])
+sys.path.insert(0, os.environ['GRMPY'])
 
 
 from scripts.simulate                import simulate
