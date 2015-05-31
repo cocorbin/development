@@ -20,7 +20,7 @@ from nose.tools import *
 sys.path.insert(0, os.environ['GRM_TOOLBOX'])
 
 # project library
-import grmToolbox
+import grmpy.public as grmpy
 
 # virtual environment
 if not hasattr(sys, 'real_prefix'):
@@ -41,7 +41,7 @@ class TestEstimationRuns(object):
         # Run command
         init_file = 'dat/testInit_A.ini'
         
-        grmToolbox.estimate(init_file, resume=False, useSimulation=False)
+        grmpy.estimate(init_file, resume=False, useSimulation=False)
 
         # Assessment of results
         rslt_dict = pkl.load(open('rslt.grm.pkl', 'r'))
@@ -52,7 +52,7 @@ class TestEstimationRuns(object):
         assert_almost_equal(max_rslt['fun'], 1.6430379682525786)
 
         # Cleanup
-        grmToolbox.cleanup(resume=False)
+        grmpy.cleanup(resume=False)
 
     @staticmethod
     def test_est_run_two():
@@ -61,7 +61,7 @@ class TestEstimationRuns(object):
         # Run command.
         init_file = 'dat/testInit_B.ini'
         
-        grmToolbox.estimate(init_file, resume=False, useSimulation=False)
+        grmpy.estimate(init_file, resume=False, useSimulation=False)
 
         # Assessment of results.
         rslt_dict = pkl.load(open('rslt.grm.pkl', 'r'))
@@ -70,7 +70,7 @@ class TestEstimationRuns(object):
         assert_almost_equal(rslt_dict['maxRslt']['fun'], 1.6569860751490129)
 
         # Cleanup.
-        grmToolbox.cleanup(resume=False)
+        grmpy.cleanup(resume=False)
 
     @staticmethod
     def test_est_run_three():
@@ -79,7 +79,7 @@ class TestEstimationRuns(object):
         # Run command
         init_file = 'dat/testInit_C.ini'
         
-        grmToolbox.estimate(init_file, resume = False, useSimulation = False)
+        grmpy.estimate(init_file, resume = False, useSimulation = False)
 
         # Assessment of results
         rslt_dict = pkl.load(open('rslt.grm.pkl', 'r'))
@@ -111,7 +111,7 @@ class TestEstimationRuns(object):
             assert_almost_equal(smteExAnte, bmteExPost - cmteExAnte)
    
         # Cleanup.
-        grmToolbox.cleanup(resume=False)
+        grmpy.cleanup(resume=False)
 
     @staticmethod
     def test_est_run_four():
@@ -155,7 +155,7 @@ class TestEstimationRuns(object):
         -1.0150089162879454)
 
         # Cleanup.
-        grmToolbox.cleanup(resume=False)
+        grmpy.cleanup(resume=False)
 
 if __name__ == '__main__': 
     
