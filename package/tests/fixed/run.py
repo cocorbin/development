@@ -120,7 +120,7 @@ class TestEstimationRuns(object):
         # Run command
         initFile = 'dat/testInit_D.ini'
 
-        grmToolbox.estimate(initFile, resume=False, useSimulation=False)
+        grmpy.estimate(initFile, resume=False, useSimulation=False)
 
         # Assessment of results.
         rslt_dict = pkl.load(open('rslt.grm.pkl', 'r'))
