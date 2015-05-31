@@ -28,7 +28,9 @@ def push():
 
         os.chdir(repo)
 
-        os.system("git commit -a -m'committing'")
+        os.system("git clean -f") 
+
+        os.system("git commit -a -m'committing'") 
 
         os.system("git push")
 
