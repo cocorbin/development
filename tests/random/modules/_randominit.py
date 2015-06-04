@@ -75,7 +75,7 @@ def _randomDict(dict_  = {}):
     else:
         hess = np.random.choice(['bfgs', 'numdiff'])
         
-    if('AGENTS in dict_.keys()):
+    if('AGENTS' in dict_.keys()):
     	AGENTS = dict_['AGENTS']
     else:
     	AGENTS = np.random.choice('None', np.random.random_integers(1, 10000))	    
@@ -160,7 +160,7 @@ def _randomDict(dict_  = {}):
     dict_['ESTIMATION']['start'] = starts
     dict_['ESTIMATION']['gtol'] = [constraints.pop(), np.random.uniform(0, 1e-10)]
     dict_['ESTIMATION']['epsilon'] = np.random.uniform(0.1, 10)
-    dict_['ESTIMATION']['differences'] = diffs
+    dict_['ESTIMATION']['differences'] = differences
     dict_['ESTIMATION']['marginal'] = truth
     dict_['ESTIMATION']['conditional'] = truth
     dict_['ESTIMATION']['average'] = truth

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 ''' Script to start development test battery for the grmToolbox.
 '''
 
@@ -13,7 +14,7 @@ import logging
 import random
 
 # project library
-from   _auxiliary import *
+from _auxiliary import *
 import _tests     as lib
 
 ''' Main Function.
@@ -26,7 +27,7 @@ def run(hours):
 
     compileToolbox('fast')
 
-    labels = ['A', 'B', 'C', 'D']
+    labels = ['A']
 
     # Initialize counter.
     dict_ = {}
