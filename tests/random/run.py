@@ -12,10 +12,15 @@ import numpy as np
 import argparse
 import logging
 import random
+import sys
 
 # project library
 from _auxiliary import *
-import _tests     as lib
+import _tests as lib
+
+# virtual environment
+if not hasattr(sys, 'real_prefix'):
+    raise AssertionError, 'Please use a virtual environment for testing'
 
 ''' Main Function.
 '''

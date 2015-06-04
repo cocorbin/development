@@ -103,7 +103,7 @@ def compileToolbox(which):
     assert (isinstance('normal'))
 
     # Setup directories.
-    toolbox, dir_ = os.environ['GRM_TOOLBOX'], os.getcwd()
+    toolbox, dir_ = os.environ['GRMPY'], os.getcwd()
 
     # Compile toolbox.
     os.chdir(toolbox)

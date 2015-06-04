@@ -78,7 +78,7 @@ def _randomDict(dict_  = {}):
     if('AGENTS' in dict_.keys()):
     	AGENTS = dict_['AGENTS']
     else:
-    	AGENTS = np.random.choice('None', np.random.random_integers(1, 10000))	    
+    	AGENTS = np.random.random_integers(1, 10000)	    
 
 
 
@@ -116,7 +116,9 @@ def _randomDict(dict_  = {}):
         dict_[flag] = {}
 
         constr, val1, val2 = constraints.pop(), np.random.sample(), np.random.sample()
+        
         val3, val4, val5, val6 = np.random.sample(), np.random.rand(0,5), np.random.rand(0,5), np.random.rand(0,5)
+        
         if(flag == 'BENE'):
             dict_[flag]['int'] = [constr, val1, val2]
             dict_[flag]['sd'] = [constr, val4, val5]
@@ -127,20 +129,31 @@ def _randomDict(dict_  = {}):
 
         
         count = numBene
+        
         if(flag == 'COST'): count = numCost
 
         dict_[flag]['coeff'] = []
 
         for _ in range(count):
+        
             pos, constr, truth  = positions.pop(), constraints.pop(), np.random.choice(['true', 'false'])
+        
             val1, val2 = np.random.uniform(-1.0, 1.0), np.random.uniform(-1.0, 1.0)
+        
             val3 = np.random.uniform(-1.0, 1.0)
+        
             if(flag == 'BENE'):
+        
                 pos, constr, truth  = positions.pop(), constraints.pop(), np.random.choice(['true', 'false'])
+        
                 val1, val2 = np.random.uniform(-1.0, 1.0), np.random.uniform(-1.0, 1.0)
+        
                 dict_[flag]['coeff'] += [pos, constr, val1, val2, truth]
+        
             if(flag == 'COST'):
+        
                 val3 = np.random.uniform(-1.0, 1.0)
+        
                 dict_[flag]['coeff'] += [pos, constr, val3]
 
 
@@ -166,7 +179,7 @@ def _randomDict(dict_  = {}):
     dict_['ESTIMATION']['average'] = truth
     dict_['ESTIMATION']['asymptotics'] = truth
     dict_['ESTIMATION']['hessian'] = hess
-    dict_['ESTIMATION']['alpha'] = np.random.choice(0.01, 0.05, 0.1)
+    dict_['ESTIMATION']['alpha'] = np.random.uniform(0.01, 0.05, 0.1)
     dict_['ESTIMATION']['simulations'] = np.random.random_integers(100,10000)
     dict_['ESTIMATION']['draws'] = np.random.random_integers(100,10000)
 
@@ -208,7 +221,7 @@ def _printDict(dict_):
 
         ''' BENE and COST
         '''
-        for flag in ['BENE', 'COST']:
+        if (flag == 'BENE'):
 
             str_ = ' {0:<6} {1:<15} {2} {3:<5} {4:<5} {5:<6} \n'
 
@@ -216,36 +229,38 @@ def _printDict(dict_):
 
             ''' Coefficients.
             '''
+            
+            numCoeffs = len(dict_[flag]['coeff'])
 
-            if flag in ['BENE']:
-                numCoeffs = len(dict_[flag]['coeff'])
+            for i in range(numCoeffs):
+                pos, constr, value1, value2, true = dict_[flag]['coeff'][i]
+                    
 
-                for i in range(numCoeffs):
-                    pos, constr, value1, value2, true = dict_[flag]['coeff'][i]
+                file_.write(str_.format('coeff', pos, constr, value1, value2, true))
+                file_.write('\n')
+                
+            constr, value1, value2 = dict_[flag]['int']
+            file_.write(str_.format('int', '', constr, value1, value2))
+            file_.write('\n')
 
-                    file_.write(str_.format('coeff', pos, constr, value1, value2, true))
-                    file_.write('\n')
+                
+        if (flag == 'COST'):    
+                
+            numCoeffs = len(dict_[flag]['coeff'])
+                
+            for i in range(numCoeffs):
+                pos, constr, value = dict_[flag]['coeff'][i]
 
-            if flag in ['COST']:
-                numCoeffs = len(dict_[flag]['coeff'])
-                for i in range(numCoeffs):
-                    pos, constr, value = dict_[flag]['coeff'][i]
-
-                    file_.write(str_.format('coeff', pos, constr, value))
-                    file_.write('\n')
+                file_.write(str_.format('coeff', pos, constr, value))
+                file_.write('\n')
 
 
             ''' Intercept
             '''
-            if flag in ['BENE']:
-                constr, value1, value2 = dict_[flag]['int']
-                file_.write(str_.format('int', '', constr, value1, value2))
-                file_.write('\n')
 
-            if flag in ['COST']:
-                constr, value = dict_[flag]['int']
-                file_.write(str_.format('int', '', constr, value))
-                file_.write('\n')
+            constr, value = dict_[flag]['int']
+            file_.write(str_.format('int', '', constr, value))
+            file_.write('\n')
 
         ''' SHOCKS
         '''
