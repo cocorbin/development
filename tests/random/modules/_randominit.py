@@ -1,8 +1,7 @@
-#!/usr/bin/env python
 
-""" Module that contains the functions for the random generation of an
+''' Module that contains the functions for the random generation of an 
     initialization file.
-"""
+'''
 
 __all__ = ['generateInitFile', '_printDict', '_randomDict']
 
@@ -16,16 +15,15 @@ import shutil
 '''
 MAX_COEFFS   = 10
 MAX_FACTORS  = 5
-MAX_TREAT    = 2
-MIN_TREAT    = 0
-MAX_DRAWS    = 10000
-MIN_DRAWS    = 10
-MAX_SIMS     = 10000
-MIN_SIMS     = 10
-MIN_AGENTS   = 'None'
-MAX_AGENTS   = 10000
-MIN_ITER     = 'None'
-MAX_ITER     = 10000
+MAX_PERIODS  = 5
+MAX_REPS     = 10
+MAX_BOOT     = 20
+MIN_AGENTS   = 10
+MAX_AGENTS   = 1000
+MAX_CPUS     = 4
+MAX_DURATION = 5
+MAX_ITER     = 10
+MAX_MOMENTS  = 5
 
 ''' Public Function
 '''
@@ -34,11 +32,11 @@ def generateInitFile(dict_ = {}):
     '''
     # Antibugging.
     assert (isinstance(dict_, dict))
-
+        
     dict_ = _randomDict(dict_)
-
+        
     _printDict(dict_)
-
+    
     # Finishing.
     return dict_
 
@@ -54,52 +52,84 @@ def _randomDict(dict_  = {}):
     if('optimizer' in dict_.keys()):
 
         optimizer = dict_['optimizer']
+        
     else:
+        
         optimizer = np.random.choice(['bfgs', 'powell'])
 
     if('truth' in dict_.keys()):
+        
          truth = dict_['truth']
+    
     else:
-         truth = np.random.choice(['true', 'false'])
+    
+        truth = np.random.choice(['true', 'false'])
+    
     if('differences' in dict_.keys()):
+        
         differences = dict_['differencess']
+    
     else:
+        
         differences = np.random.choice(['one-sided', 'two-sided'])
+    
     if('starts' in dict_.keys()):
+        
         starts = dict_['starts']
+    
     else:
+        
         starts = np.random.choice(['manual', 'auto'])
 
-    if('hessian' in dict_.keys()):
-        hessian = dict_['hessian']
-    else:
-        hess = np.random.choice(['bfgs', 'numdiff'])
+    if('hess' in dict_.keys()):
         
-    if('AGENTS' in dict_.keys()):
-    	AGENTS = dict_['AGENTS']
+        hess = dict_['hess']
+    
     else:
-    	AGENTS = np.random.random_integers(1, 10000)	    
+        
+        hess = np.random.choice(['bfgs', 'numdiff'])
 
+    if('AGENTS' in dict_.keys()):
+    	
+        AGENTS = dict_['AGENTS']
+    
+    else:
+    	
+        AGENTS = np.random.random_integers(1, 10000)
 
-
+    
     ''' Overall
-    '''
-    numBene     = np.random.random_integers(0, MAX_COEFFS)
-    numCost     = np.random.random_integers(0, MAX_COEFFS)
+    '''    
+    numBene     = np.random.random_integers(1, MAX_COEFFS)
+
+    numCost     = np.random.random_integers(1, MAX_COEFFS)
+    
     numCoeffs   = numBene + numCost
+    
     positions   = list(range(1, numCoeffs + 4 + 3 + 2 + 1))
-    numSim      = np.random.random_integers(MIN_SIMS, MAX_SIMS)
 
+    numSim      = np.random.random_integers(MIN_AGENTS, MAX_AGENTS)
+        
+    numEst      = np.random.choice(list(range(MIN_AGENTS, numSim)) + ['None'])
+    
+    
     constraints = np.random.choice(['!', ' '], size = numCoeffs + 4 + 3 + 2 + 2).tolist()
-
+    
     if(constraints.count(' ') == 0): constraints[-1] = ' '
+    
     numFree = constraints.count(' ')
-
-
+    
+    
     dict_ = {}
 
-# !! NEED TO CONSTRUCT TEST DATA SET !!
+    ''' OBSERVED
+    '''
+    dict_['ENVIRONMENT'] = {}
 
+    for flag in ['subsidy', 'cost', 'discount']:
+        
+        dict_['ENVIRONMENT'][flag]  = np.random.sample()
+    
     ''' DATA
     '''
     dict_['DATA'] = {}
@@ -108,92 +138,91 @@ def _randomDict(dict_  = {}):
     dict_['DATA']['outcome']  = 0
     dict_['DATA']['treatment']  = np.random.random_integers(0,2)
 
-
-    ''' BENEFITS and COST
+    
+    ''' BENEFITS and COSTS
     '''
     for flag in ['BENE', 'COST']:
 
+
         dict_[flag] = {}
-
-        constr, val1, val2 = constraints.pop(), np.random.sample(), np.random.sample()
         
-        val3, val4, val5, val6 = np.random.sample(), np.random.rand(0,5), np.random.rand(0,5), np.random.rand(0,5)
+        constr = constraints.pop()
         
-        if(flag == 'BENE'):
-            dict_[flag]['int'] = [constr, val1, val2]
-            dict_[flag]['sd'] = [constr, val4, val5]
+        valBenefit = np.random.sample(2,)
         
-        if(flag == 'COST'):
-            dict_[flag]['sd'] = [constr, val6]
-            dict_[flag]['int'] = [constr, val3]
-
+        valCost = np.random.sample()
+        
+        dict_[flag]['int'] = [constr, valBenefit] 
+        
+        if(flag == 'COST'): dict_[flag]['int'] = [constr, valCost]
+        
+        dict_[flag]['sd'] = [constr, valBenefit] 
+        
+        if(flag == 'COST'): dict_[flag]['sd'] = [constr, valCost]
         
         count = numBene
         
         if(flag == 'COST'): count = numCost
-
+        
         dict_[flag]['coeff'] = []
 
+            
         for _ in range(count):
-        
-            pos, constr, truth  = positions.pop(), constraints.pop(), np.random.choice(['true', 'false'])
-        
-            val1, val2 = np.random.uniform(-1.0, 1.0), np.random.uniform(-1.0, 1.0)
-        
-            val3 = np.random.uniform(-1.0, 1.0)
-        
-            if(flag == 'BENE'):
-        
-                pos, constr, truth  = positions.pop(), constraints.pop(), np.random.choice(['true', 'false'])
-        
-                val1, val2 = np.random.uniform(-1.0, 1.0), np.random.uniform(-1.0, 1.0)
-        
-                dict_[flag]['coeff'] += [pos, constr, val1, val2, truth]
-        
-            if(flag == 'COST'):
-        
-                val3 = np.random.uniform(-1.0, 1.0)
-        
-                dict_[flag]['coeff'] += [pos, constr, val3]
+
+            pos, constr, truth  = positions.pop(), constraints.pop(), np.random.choice(['true', 'false'])           
+            
+            valBenefit = np.random.sample(2,)
+            
+            valCost = np.random.sample()
+            
+            dict_[flag]['coeff'] += [[pos, constr, valBenefit, truth]]
+            
+            if(flag == 'COST'): dict_[flag]['coeff'] += [[pos, constr, valCost]]
 
 
     ''' DIST
     '''
     dict_['DIST'] = {}
-    dict_['DIST']['rho0'] = [constraints.pop(), np.random.uniform(-1.0, 1.0)]
-    dict_['DIST']['rho1'] = [constraints.pop(), np.random.uniform(-1.0, 1.0)]
-
-#  !! SHOULD 'ALGORITHM' BE REPLACED BY EXTERNAL optimizers.ini?  !!
-
+    
+    dict_['DIST']['rho0'] = [constraints.pop(), np.random.uniform(-1.00, 1.00)]
+            
+    dict_['DIST']['rho1'] = [constraints.pop(), np.random.uniform(-1.00, 1.00)]
+    
+    
     ''' ESTIMATION
     '''
+
     dict_['ESTIMATION'] = {}
     dict_['ESTIMATION']['algorithm'] = optimizer
     dict_['ESTIMATION']['maxiter'] = np.random.random_integers(0, 10000)
     dict_['ESTIMATION']['start'] = starts
-    dict_['ESTIMATION']['gtol'] = [constraints.pop(), np.random.uniform(0, 1e-10)]
+    dict_['ESTIMATION']['gtol'] = np.random.uniform(0, 1e-10)
     dict_['ESTIMATION']['epsilon'] = np.random.uniform(0.1, 10)
     dict_['ESTIMATION']['differences'] = differences
-    dict_['ESTIMATION']['marginal'] = truth
-    dict_['ESTIMATION']['conditional'] = truth
-    dict_['ESTIMATION']['average'] = truth
-    dict_['ESTIMATION']['asymptotics'] = truth
+    
+    for flag in ['marginal', 'conditional', 'average', 'asymptotics']:
+
+        dict_['ESTIMATION'][flag] = np.random.choice(['true', 'false'])
+
     dict_['ESTIMATION']['hessian'] = hess
     dict_['ESTIMATION']['alpha'] = np.random.uniform(0.01, 0.05, 0.1)
     dict_['ESTIMATION']['simulations'] = np.random.random_integers(100,10000)
     dict_['ESTIMATION']['draws'] = np.random.random_integers(100,10000)
 
-
+    
     ''' SIMULATION
     '''
     dict_['SIMULATION'] = {}
-    dict_['SIMULATION']['agents']  = AGENTS
-    dict_['SIMULATION']['seed']    = np.random.random_integers(1, 1000)
-    dict_['SIMULATION']['target'] = 'test.simulation.dat'
+    
+    dict_['SIMULATION']['agents']  = numSim
 
-    # Finishing.
+    dict_['SIMULATION']['seed']    = np.random.random_integers(1, 100)
+
+    dict_['SIMULATION']['target']  = 'simulation.dat'
+    
+    # Finishing.    
     return dict_
-
+        
 def _printDict(dict_):
     ''' Generate a random initialization file.
     '''
@@ -229,25 +258,35 @@ def _printDict(dict_):
 
             ''' Coefficients.
             '''
-            
+
             numCoeffs = len(dict_[flag]['coeff'])
 
             for i in range(numCoeffs):
                 pos, constr, value1, value2, true = dict_[flag]['coeff'][i]
-                    
+
 
                 file_.write(str_.format('coeff', pos, constr, value1, value2, true))
                 file_.write('\n')
-                
+
+            ''' Intercept
+            '''
+
             constr, value1, value2 = dict_[flag]['int']
             file_.write(str_.format('int', '', constr, value1, value2))
             file_.write('\n')
+            
+            ''' SD
+            '''    
+            
+            constr, value1, value2 = dict_[flag]['sd']
+            file_.write(str_.format('sd', '', constr, value1, value2))
+            file_.write('\n')
 
-                
-        if (flag == 'COST'):    
-                
+
+        if (flag == 'COST'):
+
             numCoeffs = len(dict_[flag]['coeff'])
-                
+
             for i in range(numCoeffs):
                 pos, constr, value = dict_[flag]['coeff'][i]
 
@@ -261,6 +300,13 @@ def _printDict(dict_):
             constr, value = dict_[flag]['int']
             file_.write(str_.format('int', '', constr, value))
             file_.write('\n')
+            
+            ''' SD
+            '''
+
+            constr, value = dict_[flag]['sd']
+            file_.write(str_.format('sd', '', constr, value))
+            file_.write('\n')
 
         ''' SHOCKS
         '''
@@ -273,3 +319,5 @@ def _printDict(dict_):
             constr, value = dict_['DIST'][key_]
 
             file_.write(str_.format(key_, constr, value))
+
+    
