@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 ''' Script to start development test battery for the grmToolbox.
 '''
 
@@ -14,8 +15,12 @@ import random
 import sys
 
 # project library
-from   _auxiliary import *
-import _tests     as lib
+from _auxiliary import *
+import _tests as lib
+
+# virtual environment
+if not hasattr(sys, 'real_prefix'):
+    raise AssertionError, 'Please use a virtual environment for testing'
 
 # virtual environment
 if not hasattr(sys, 'real_prefix'):
@@ -31,7 +36,7 @@ def run(hours):
 
     compileToolbox('fast')
 
-    labels = ['A', 'B', 'C', 'D']
+    labels = ['A']
 
     # Initialize counter.
     dict_ = {}
