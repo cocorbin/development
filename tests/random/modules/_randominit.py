@@ -1,4 +1,3 @@
-
 ''' Module that contains the functions for the random generation of an 
     initialization file.
 '''
@@ -9,21 +8,13 @@ __all__ = ['generateInitFile', '_printDict', '_randomDict']
 # standard library
 import numpy as np
 
-import shutil
+
 
 ''' Module-specific Parameters
 '''
 MAX_COEFFS   = 10
-MAX_FACTORS  = 5
-MAX_PERIODS  = 5
-MAX_REPS     = 10
-MAX_BOOT     = 20
 MIN_AGENTS   = 10
 MAX_AGENTS   = 1000
-MAX_CPUS     = 4
-MAX_DURATION = 5
-MAX_ITER     = 10
-MAX_MOMENTS  = 5
 
 ''' Public Function
 '''
@@ -108,10 +99,7 @@ def _randomDict(dict_  = {}):
     
     positions   = list(range(1, numCoeffs + 4 + 3 + 2 + 1))
 
-    numSim      = np.random.random_integers(MIN_AGENTS, MAX_AGENTS)
-        
-    numEst      = np.random.choice(list(range(MIN_AGENTS, numSim)) + ['None'])
-    
+    numSim      = np.random.random_integers(MIN_AGENTS, MAX_AGENTS)    
     
     constraints = np.random.choice(['!', ' '], size = numCoeffs + 4 + 3 + 2 + 2).tolist()
     
@@ -121,14 +109,6 @@ def _randomDict(dict_  = {}):
     
     
     dict_ = {}
-
-    ''' OBSERVED
-    '''
-    dict_['ENVIRONMENT'] = {}
-
-    for flag in ['subsidy', 'cost', 'discount']:
-        
-        dict_['ENVIRONMENT'][flag]  = np.random.sample()
     
     ''' DATA
     '''
@@ -136,7 +116,7 @@ def _randomDict(dict_  = {}):
     dict_['DATA']['source']  = 'test.dataset.dat'
     dict_['DATA']['agents']  = AGENTS
     dict_['DATA']['outcome']  = 0
-    dict_['DATA']['treatment']  = np.random.random_integers(0,2)
+    dict_['DATA']['treatment']  = 1
 
     
     ''' BENEFITS and COSTS
@@ -148,17 +128,19 @@ def _randomDict(dict_  = {}):
         
         constr = constraints.pop()
         
-        valBenefit = np.random.sample(2,)
+        valBene1, valBene2 = round(np.random.ranf(),2), round(np.random.ranf(),2)
+        valBene3, valBene4 = round(np.random.ranf(),2), round(np.random.ranf(),2)
         
-        valCost = np.random.sample()
+        valCost1 = round(np.random.ranf(),2)
+        valCost2 = round(np.random.ranf(),2)
         
-        dict_[flag]['int'] = [constr, valBenefit] 
+        if(flag == 'BENE'): dict_[flag]['int'] = [constr, valBene1, valBene2] 
         
-        if(flag == 'COST'): dict_[flag]['int'] = [constr, valCost]
+        if(flag == 'COST'): dict_[flag]['int'] = [constr, valCost1]
         
-        dict_[flag]['sd'] = [constr, valBenefit] 
+        if(flag == 'BENE'): dict_[flag]['sd'] = [constr, valBene3, valBene4] 
         
-        if(flag == 'COST'): dict_[flag]['sd'] = [constr, valCost]
+        if(flag == 'COST'): dict_[flag]['sd'] = [constr, valCost2]
         
         count = numBene
         
@@ -171,11 +153,11 @@ def _randomDict(dict_  = {}):
 
             pos, constr, truth  = positions.pop(), constraints.pop(), np.random.choice(['true', 'false'])           
             
-            valBenefit = np.random.sample(2,)
+            valBene1, valBene2 = round(np.random.ranf(),2), round(np.random.ranf(),2)
             
-            valCost = np.random.sample()
+            valCost = round(np.random.ranf(),2)
             
-            dict_[flag]['coeff'] += [[pos, constr, valBenefit, truth]]
+            if(flag == 'BENE'):dict_[flag]['coeff'] += [[pos, constr, valBene1, valBene2, truth]]
             
             if(flag == 'COST'): dict_[flag]['coeff'] += [[pos, constr, valCost]]
 
@@ -205,7 +187,10 @@ def _randomDict(dict_  = {}):
         dict_['ESTIMATION'][flag] = np.random.choice(['true', 'false'])
 
     dict_['ESTIMATION']['hessian'] = hess
-    dict_['ESTIMATION']['alpha'] = np.random.uniform(0.01, 0.05, 0.1)
+
+    if(dict_['ESTIMATION']['algorithm'] == 'powell'): dict_['ESTIMATION']['hessian'] = 'bfgs'
+
+    dict_['ESTIMATION']['alpha'] = np.random.choice([0.01, 0.05, 0.1])
     dict_['ESTIMATION']['simulations'] = np.random.random_integers(100,10000)
     dict_['ESTIMATION']['draws'] = np.random.random_integers(100,10000)
 
@@ -231,93 +216,149 @@ def _printDict(dict_):
 
     # Create initialization.
     with open('test.grm.ini', 'w') as file_:
-
-        ''' DATA, BENEFITS, COST, ESTIMATION, and SIMULATION
+    
+        ''' DATA
         '''
-        for flag in dict_.keys():
+        
+        str_ = ' {0:<15} {1:<15} \n'
 
-            if(flag in ['DIST', 'BENE', 'COST']): continue
+        file_.write('DATA' +'\n')
 
-            str_ = ' {0:<15} {1:<15} \n'
+        for keys_ in ['source', 'agents']:
 
-            file_.write(' ' + flag.upper() +'\n\n')
+            file_.write(str_.format('   '+ keys_, dict_['DATA'][keys_]))
+        
+        file_.write('\n')
+            
+        for keys_ in ['outcome', 'treatment']:
 
-            for keys_ in dict_[flag]:
+            file_.write(str_.format('   '+ keys_, dict_['DATA'][keys_]))
 
-                file_.write(str_.format(keys_, dict_[flag][keys_]))
-
-            file_.write('\n')
-
-        ''' BENE and COST
+        file_.write('\n')
+        
+        ''' BENE
         '''
-        if (flag == 'BENE'):
+        
+        str_ = ' {0:<8} {1:<5} {2}{3:<3} {4}{5:<3} {6:<6} \n'
 
-            str_ = ' {0:<6} {1:<15} {2} {3:<5} {4:<5} {5:<6} \n'
-
-            file_.write(' ' + flag.upper() +'\n\n')
-
-            ''' Coefficients.
-            '''
-
-            numCoeffs = len(dict_[flag]['coeff'])
-
-            for i in range(numCoeffs):
-                pos, constr, value1, value2, true = dict_[flag]['coeff'][i]
-
-
-                file_.write(str_.format('coeff', pos, constr, value1, value2, true))
-                file_.write('\n')
-
-            ''' Intercept
-            '''
-
-            constr, value1, value2 = dict_[flag]['int']
-            file_.write(str_.format('int', '', constr, value1, value2))
-            file_.write('\n')
-            
-            ''' SD
-            '''    
-            
-            constr, value1, value2 = dict_[flag]['sd']
-            file_.write(str_.format('sd', '', constr, value1, value2))
-            file_.write('\n')
-
-
-        if (flag == 'COST'):
-
-            numCoeffs = len(dict_[flag]['coeff'])
-
-            for i in range(numCoeffs):
-                pos, constr, value = dict_[flag]['coeff'][i]
-
-                file_.write(str_.format('coeff', pos, constr, value))
-                file_.write('\n')
-
-
-            ''' Intercept
-            '''
-
-            constr, value = dict_[flag]['int']
-            file_.write(str_.format('int', '', constr, value))
-            file_.write('\n')
-            
-            ''' SD
-            '''
-
-            constr, value = dict_[flag]['sd']
-            file_.write(str_.format('sd', '', constr, value))
-            file_.write('\n')
-
-        ''' SHOCKS
+        file_.write('BENE' +'\n\n')     
+        
+                
+        ''' BENE: Coefficients
         '''
-        str_ = ' {0:<5} {1}{2:<5}\n'
+        
+        numCoeffs = len(dict_['BENE']['coeff'])
 
-        file_.write(' ' + 'DIST' +'\n\n')
+        for i in range(numCoeffs):
+            
+            pos, constr, val1, val2, true = dict_['BENE']['coeff'][i]
+
+            file_.write(str_.format('   ' + 'coeff', pos, constr, val2, constr, val2, true))
+
+        file_.write('\n')
+
+        ''' BENEFITS: Intercept & SD
+        '''
+        str_ = ' {0:<8} {1:<5} {2}{3:<5} {4}{5:<5} \n'
+        
+        for key_ in ['int', 'sd']:
+        
+            constr, val1, val2 = dict_['BENE'][key_]
+            file_.write(str_.format('   ' + key_, ' ',constr, val1, constr, val2))
+        
+        file_.write('\n')
+
+        ''' COST
+        '''
+        
+        str_ = ' {0:<8} {1:<5} {2}{3:<5} \n'
+        file_.write('COST' +'\n\n')
+
+        numCoeffs = len(dict_['COST']['coeff'])
+
+        for i in range(numCoeffs):
+            
+            pos, constr, value = dict_['COST']['coeff'][i]
+
+            file_.write(str_.format('   ' + 'coeff', pos, constr, value))
+            
+        file_.write('\n')
+
+
+        ''' COST: Intercept & SD
+        '''
+        
+        for key_ in ['int', 'sd']:
+        
+            constr, value = dict_['COST'][key_]
+            
+            file_.write(str_.format('   ' + key_, ' ', constr, value))
+        
+        file_.write('\n')
+
+
+
+        ''' DIST
+        '''
+        
+        str_ = ' {0:<5} {1}{2:<5} \n'
+
+        file_.write('DIST' +'\n\n')
 
         for key_ in ['rho0', 'rho1']:
 
             constr, value = dict_['DIST'][key_]
 
-            file_.write(str_.format(key_, constr, value))
+            file_.write(str_.format('   ' + key_, constr, value))
+        
+        file_.write('\n')
+        
+        
+        '''ESTIMATION
+        '''
+        
+        str_ = ' {0:<15} {1:<15} \n'
 
-    
+        file_.write('ESTIMATION' +'\n\n')
+        
+        for key_ in ['algorithm', 'maxiter', 'start', 'gtol']:
+        
+            file_.write(str_.format('   ' + key_, dict_['ESTIMATION'][key_]))
+            
+        file_.write('\n')
+        
+        for key_ in ['epsilon', 'differences']:
+        
+            file_.write(str_.format('   ' + key_, dict_['ESTIMATION'][key_]))
+        
+        file_.write('\n')
+        
+        for key_ in ['marginal', 'conditional', 'average']:
+        
+            file_.write(str_.format('   ' + key_, dict_['ESTIMATION'][key_]))
+            
+        file_.write('\n')
+        
+        for key_ in ['asymptotics', 'hessian']:
+        
+            file_.write(str_.format('   ' + key_, dict_['ESTIMATION'][key_]))
+        
+        file_.write('\n')
+        
+        for key_ in ['draws', 'simulations', 'alpha']:
+        
+            file_.write(str_.format('   ' + key_, dict_['ESTIMATION'][key_]))
+
+        file_.write('\n')
+        
+        ''' SIMULATION
+        '''
+        
+        str_ = ' {0:<15} {1:<15} \n'
+
+        file_.write('SIMULATION' +'\n\n')
+
+        for keys_ in ['agents', 'seed', 'target']:
+
+            file_.write(str_.format('   ' + keys_, dict_['SIMULATION'][keys_]))
+
