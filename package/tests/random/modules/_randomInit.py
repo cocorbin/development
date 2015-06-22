@@ -361,4 +361,3 @@ def _printDict(dict_):
         for keys_ in ['agents', 'seed', 'target']:
 
             file_.write(str_.format('   ' + keys_, dict_['SIMULATION'][keys_]))
-
