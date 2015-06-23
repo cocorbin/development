@@ -9,18 +9,19 @@ import numpy    as np
 import sys
 import os
 
-
-
 # project library
-import grmpy.tests.random.modules._auxiliary
-import grmpy.tests.random.modules._randomInit
+import _auxiliary
+import _randominit
+
+# structToolbox
+sys.path.insert(0, os.environ['GRM_TOOLBOX'])
 
 
-from grmpy.public   import simulate
-from grmpy.public   import estimate
-from grmpy.public   import perturb
+from scripts.simulate                import simulate
+from scripts.estimate                import estimate
+from scripts.perturb                 import perturb
 
-from grmpy.tools.auxiliary  import createMatrices
+from tools.auxiliary                 import readStep
 
 ''' Main
 '''
@@ -39,6 +40,10 @@ def testA():
 
     perturb(scale = scale, seed = 123)
 
+    # Evaluation of function
+
+
+    _auxiliary.compileToolbox()
 
     # Estimate
     estimate(useSimulaton = True)

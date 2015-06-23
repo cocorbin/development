@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 ''' Script to start development test battery for the grmToolbox.
 '''
 
@@ -11,20 +11,10 @@ import numpy as np
 import argparse
 import logging
 import random
-import sys
-
-import grmpy.public as grmpy
 
 # project library
-from  grmpy.tests.random.modules._auxiliary import *
-import grmpy.tests.random.modules._tests     as lib
-
-# virtual environment
-
-
-''' if not hasattr(sys, 'real_prefix'):
-   raise AssertionError('Please use a virtual environment for testing')
-'''
+from   _auxiliary import *
+import _tests     as lib
 
 ''' Main Function.
 '''
@@ -34,8 +24,9 @@ def run(hours):
 
     start, timeout = datetime.now(), timedelta(hours = hours)
 
+    compileToolbox('fast')
 
-    labels = ['A', 'B']
+    labels = ['A', 'B', 'C', 'D']
 
     # Initialize counter.
     dict_ = {}

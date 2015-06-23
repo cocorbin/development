@@ -1,7 +1,7 @@
 ''' Auxiliary functions for development test suite.
 '''
 
-__all__ = ['distributeInput', 'finish', 'cleanup', \
+__all__ = ['distributeInput', 'finish', 'compileToolbox', 'cleanup', \
            'startLogging']
 
 # standard library
@@ -12,7 +12,7 @@ import glob
 import os
 
 # subproject library
-import grmpy.tests.random.modules.clsMail
+import clsMail
 
 ''' Logging.
 '''
@@ -84,7 +84,7 @@ def finish(dict_, HOURS):
     message = ' A ' + str(HOURS) +' hour run of the testing battery on @' + hostname + ' is completed.'
 
 
-    mailObj = modules.clsMail.mailCls()
+    mailObj = clsMail.mailCls()
 
     mailObj.setAttr('subject', subject)
 
@@ -96,6 +96,26 @@ def finish(dict_, HOURS):
 
     mailObj.send()
 
+def compileToolbox(which):
+    ''' Compile toolbox.
+    '''
+    # Antibugging
+    assert (isinstance('normal'))
+
+    # Setup directories.
+    toolbox, dir_ = os.environ['GRM_TOOLBOX'], os.getcwd()
+
+    # Compile toolbox.
+    os.chdir(toolbox)
+
+    cmd = './waf configure build '
+
+
+    cmd = cmd + ' > /dev/null 2>&1'
+
+    os.system(cmd)
+
+    os.chdir(dir_)
 
 def cleanup():
     ''' Cleanup after test battery.
