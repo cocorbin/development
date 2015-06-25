@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python3
 ''' Script to start development test battery for the grmToolbox.
 '''
 
@@ -14,17 +13,18 @@ import logging
 import random
 import sys
 
+import grmpy.public as grmpy
+
 # project library
-from _auxiliary import *
-import _tests as lib
+from  grmpy.tests.random.modules._auxiliary import *
+import grmpy.tests.random.modules._tests     as lib
 
 # virtual environment
-if not hasattr(sys, 'real_prefix'):
-    raise AssertionError, 'Please use a virtual environment for testing'
 
-# virtual environment
-if not hasattr(sys, 'real_prefix'):
-    raise AssertionError, 'Please use a virtual environment for testing'
+
+''' if not hasattr(sys, 'real_prefix'):
+   raise AssertionError('Please use a virtual environment for testing')
+'''
 
 ''' Main Function.
 '''
@@ -34,9 +34,8 @@ def run(hours):
 
     start, timeout = datetime.now(), timedelta(hours = hours)
 
-    compileToolbox('fast')
 
-    labels = ['A']
+    labels = ['A', 'B']
 
     # Initialize counter.
     dict_ = {}
